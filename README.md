@@ -24,6 +24,71 @@ Sistema de piso para un taller de colisión: reparte cada etapa de reparación e
 | `/consulta` | Consulta pública con folio + placa: etapa actual, fecha prometida y saldo | público |
 | `/panel` | Horas vendidas, ganancia de la semana, pago a técnicos, ocupación por área, atrasos | gerencia |
 
+## Dónde está cada cosa
+
+```
+├── src/
+│   ├── main.tsx, App.tsx        entrada, rutas y permisos por rol
+│   ├── pages/                   las 13 pantallas (Login, Planificador, Ordenes, OrdenDetalle,
+│   │                            NuevaOrden, Presupuesto, Pagos, Refacciones, VistaTecnico,
+│   │                            Liquidacion, Configuracion, ConsultaPublica, Panel)
+│   ├── components/              Layout (menú lateral) y ui (botones, avisos, estados)
+│   └── lib/                     supabase.ts (cliente con clave anon), op.ts (llamada a operar()
+│                                con op_id e idempotencia), auth.tsx (sesión y rol), format.ts
+│                                (MXN, fechas en zona del taller), ics.ts (archivo .ics)
+├── supabase/
+│   ├── migrations/              1 esquema y restricciones · 2 funciones de BD · 3 permisos y RLS
+│   ├── seed.sql                 datos de ejemplo (SQL de preparación)
+│   ├── reiniciar_datos.sql      borra los datos de ejemplo para volver a sembrarlos
+│   ├── tests/                   pruebas SQL de aceptación y carrera de dos sesiones
+│   └── config.toml              configuración para la CLI de Supabase en local
+├── scripts/                     db-local.sh (pruebas SQL), verificar-rls.mjs, verificar-proyecto.mjs,
+│                                carrera-cabina.mjs (prueba guiada por la API)
+├── .github/workflows/pages.yml  publicación en GitHub Pages
+└── .env.example                 variables que necesita el front (URL y clave anon)
+```
+
+Toda la lógica de negocio vive en la base (`supabase/migrations/20261120000002_funciones.sql`): el front solo muestra datos y llama a `public.operar()`.
+
+## Qué está simulado
+
+La app no se integra con servicios externos, como pide el encargo:
+
+| Funcionalidad | Cómo se comporta |
+|---|---|
+| **Correos** | No se envía ningún correo. Las cuentas de prueba ya vienen confirmadas y no hay recuperación de contraseña por correo. |
+| **Pagos** | No hay pasarela. «Pagos» registra a mano un anticipo, saldo, deducible o pago de aseguradora, como si el asesor cobrara en caja. Cada registro lleva un `op_id`: repetirlo no cobra dos veces. |
+| **WhatsApp** | «Compartir por WhatsApp» abre `wa.me` con el texto armado (estado, fecha prometida, saldo y enlace de seguimiento). La persona tiene que apretar enviar: no hay envíos automáticos ni API de mensajería. |
+| **Calendario** | «Descargar .ics» genera el archivo de la cita de entrega en el navegador. No se conecta a ningún calendario. |
+| **Copiar texto** | Copia el mismo mensaje al portapapeles, como alternativa local. |
+| **Aseguradora** | La autorización del presupuesto la marca el asesor con «Marcar autorizado». No hay conexión con aseguradoras. |
+| **Tiempo real del técnico** | Las horas productivas salen de los botones «En curso», «Pausar» y «Terminar». No hay reloj checador. |
+
+Todo lo demás (planificación, reglas, presupuestos, pagos, liquidación, consulta pública) es real y queda guardado en Supabase.
+
+## Datos de ejemplo y cómo reiniciarlos
+
+Los datos de ejemplo se cargan con `supabase/seed.sql` y viven en Supabase, **no en el navegador**. Incluyen:
+
+- 7 cuentas de prueba;
+- la configuración, el horario, las 5 áreas, los técnicos A–E y el catálogo del encargo;
+- 6 órdenes sintéticas fechadas en la semana en que se corre la semilla:
+  - **OT-0001:** caso resuelto, sin anticipo;
+  - **OT-0002:** aseguradora con el enderezado partido;
+  - **OT-0003:** atrasada;
+  - **OT-0004 y OT-0005:** para la prueba guiada;
+  - **OT-0006:** de la semana anterior, lista para entrega;
+- un mantenimiento y una ausencia.
+
+Para volver al estado inicial (por ejemplo, después de la prueba guiada o para que las fechas caigan en la semana actual), en el **SQL Editor** de Supabase:
+
+1. Ejecutá `supabase/reiniciar_datos.sql`. Borra órdenes, bloques, pagos, refacciones, ausencias y liquidaciones, y reinicia los folios. No toca usuarios, técnicos, áreas, catálogo ni configuración.
+2. Ejecutá `supabase/seed.sql` completo.
+
+En local con la CLI alcanza con `supabase db reset`.
+
+El navegador solo guarda la sesión iniciada (clave `tablero-bahias-auth` en el localStorage). Borrar el localStorage o tocar «Cerrar sesión» solo desloguea: no cambia ningún dato.
+
 ## Puesta en marcha
 
 ### 1. Proyecto Supabase (gratuito)
@@ -35,6 +100,8 @@ Sistema de piso para un taller de colisión: reparte cada etapa de reparación e
    2. `supabase/migrations/20261120000002_funciones.sql`
    3. `supabase/migrations/20261120000003_rls.sql`
    4. `supabase/seed.sql`: semilla con el SQL de preparación, copiada al final de este README
+
+Para volver a los datos de ejemplo más adelante, ver «Datos de ejemplo y cómo reiniciarlos».
 
 En local con la CLI alcanza con `supabase start` (aplica migraciones y semilla) o `supabase db reset`.
 
