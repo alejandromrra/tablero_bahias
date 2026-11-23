@@ -48,6 +48,20 @@ npm run dev                  # http://localhost:8080
 
 En **Lovable**: importá este repositorio desde GitHub, conectá la integración de Supabase al proyecto del paso 1 y definí `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`.
 
+### 3. Publicación en GitHub Pages
+
+URL de previsualización: **https://alejandromrra.github.io/tablero_bahias/**
+
+El workflow `.github/workflows/pages.yml` compila y publica en cada push a `main`. Configuración (una sola vez):
+
+1. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. **Settings → Secrets and variables → Actions → pestaña Variables → New repository variable**:
+   - `VITE_SUPABASE_URL` = URL del proyecto, por ejemplo `https://xxxx.supabase.co`.
+   - `VITE_SUPABASE_ANON_KEY` = clave pública `anon`. **Nunca** la `service_role`.
+3. **Actions → Publicar en GitHub Pages → Run workflow**, o cualquier push a `main`.
+
+La app se compila con `VITE_BASE=/tablero_bahias/`. Una copia de `index.html` como `404.html` permite abrir o recargar cualquier ruta, por ejemplo `/tablero_bahias/planificador`.
+
 ### Cuentas de prueba
 
 Contraseña para todas: **`Taller2026!`**. La pantalla de login tiene botones que completan cada cuenta.

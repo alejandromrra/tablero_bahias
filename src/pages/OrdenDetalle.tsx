@@ -31,7 +31,7 @@ export default function OrdenDetalle() {
   const { orden: o, piezas, etapas, bloques, areas, fin } = data;
   const tramosDe = (etapaId: string) => bloques.filter((b) => b.etapa_id === etapaId);
   const area = (aid: string) => areas.find((a) => a.id === aid);
-  const urlConsulta = `${window.location.origin}/consulta?folio=${encodeURIComponent(o.folio)}&placa=${encodeURIComponent(o.placa)}`;
+  const urlConsulta = `${window.location.origin}${import.meta.env.BASE_URL}consulta?folio=${encodeURIComponent(o.folio)}&placa=${encodeURIComponent(o.placa)}`;
   const saldo = fin?.saldo_cliente ?? 0;
   const pulido = etapas.find((e) => e.tipo === 'pulido_armado');
   const qc = etapas.find((e) => e.tipo === 'control_calidad');
