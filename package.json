@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test:db": "./scripts/db-local.sh",
-    "carrera": "node scripts/carrera-cabina.mjs"
+    "carrera": "node scripts/carrera-cabina.mjs",
+    "rls": "node scripts/verificar-rls.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",

@@ -184,6 +184,18 @@ Por la API, con las dos cuentas en paralelo y solo la clave `anon`:
 npm run carrera
 ```
 
+### RLS verificada por la API
+
+`npm run rls` entra como `tecnico.a@taller.test` con la clave `anon` y consulta Supabase directamente. Verifica que:
+
+- solo lee sus bloques y sus órdenes;
+- `select *` de `orden` falla porque incluye el deducible;
+- cambiar el id por el de otra orden devuelve 0 filas;
+- presupuestos, pagos, refacciones, clientes y configuración devuelven 0 filas;
+- `tarifa_hora` está denegada;
+- no puede insertar bloques;
+- la consulta pública con un folio ajeno devuelve `null`.
+
 ### Pruebas de la base de datos
 
 `npm run test:db` (`scripts/db-local.sh`) arma una base en un Postgres 15 o superior local, con un stub mínimo de Supabase, aplica migraciones y semilla, y corre dos archivos.
@@ -196,7 +208,8 @@ npm run carrera
 - **Refacciones y estados:** armado bloqueado por refacciones; ciclo Esperando refacción → En proceso → control de calidad → Lista para entrega; entrega con saldo.
 - **Mover y cancelar:** mover una ficha sin escrituras parciales; cancelar orden liberando bloques futuros.
 - **Permisos:** RLS por rol y para `anon`; consulta pública.
-- **Panel y liquidación:** atraso en vista y panel; ganancia por margen; liquidación con bono sobre horas productivas, cierre idempotente y solo lectura.
+- **Panel y liquidación:** atraso en vista y panel; ganancia por margen; liquidación con bono sobre horas productivas (32 h → $120, 30 h exactas → $0), cierre idempotente y solo lectura.
+- **Programable:** solo aparecen como programables las órdenes habilitadas por anticipo o autorización.
 
 Cada rechazo verifica además que no quedaron escrituras parciales.
 

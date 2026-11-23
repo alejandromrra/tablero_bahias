@@ -356,4 +356,33 @@ do $$ begin perform pg_temp.accion('tecnico.a@taller.test', 'OT-0002', 'desarmad
 reset role;
 select pg_temp.debe_fallar($$ select pg_temp.op('cerrar_liquidacion', jsonb_build_object('semana_inicio', public._semana_de(now()))) $$, 'En curso');
 
+
+-- 14. Bono con la regla real de 30 h productivas (semana sintética 3 semanas atrás)
+do $$ declare sem date := public._semana_de(now()) - 21; e uuid := pg_temp.eid('OT-0003','desarmado'); l jsonb; fe jsonb; fc jsonb; begin
+  insert into public.registro_tiempo (etapa_id, tecnico_id, inicio, fin)
+  select e, pg_temp.tid('E'), (sem + d)::timestamp at time zone 'America/Mexico_City' + interval '9 hours',
+         (sem + d)::timestamp at time zone 'America/Mexico_City' + interval '9 hours' + make_interval(mins => m)
+    from (values (0, 480), (1, 480), (2, 480), (3, 480)) v(d, m);          -- E: 32 h
+  insert into public.registro_tiempo (etapa_id, tecnico_id, inicio, fin)
+  select e, pg_temp.tid('C'), (sem + d)::timestamp at time zone 'America/Mexico_City' + interval '9 hours',
+         (sem + d)::timestamp at time zone 'America/Mexico_City' + interval '9 hours' + make_interval(mins => m)
+    from (values (0, 480), (1, 480), (2, 480), (3, 360)) v(d, m);          -- C: 30 h exactas
+  l := public.liquidacion_semana(sem);
+  select x into fe from jsonb_array_elements(l->'filas') x where x->>'tecnico_nombre' = 'Técnico E';
+  select x into fc from jsonb_array_elements(l->'filas') x where x->>'tecnico_nombre' = 'Técnico C';
+  -- E: 32 × 130 = 4.160 + bono (32 − 30) × 60 = 120 → 4.280 · C: 30 × 140 = 4.200, sin bono
+  if (fe->>'bono')::numeric <> 120 or (fe->>'total')::numeric <> 4280 or (fc->>'bono')::numeric <> 0 or (fc->>'total')::numeric <> 4200 then
+    raise exception 'Bono de 30 h mal calculado: E % · C %', fe, fc;
+  end if;
+  raise notice 'OK bono 30 h: E 32 h → bono %, C 30 h → bono %', fe->>'bono', fc->>'bono';
+end $$;
+
+-- 15. Programable solo si está habilitada (vista que usa el planificador)
+do $$ begin
+  if (select habilitada from public.v_orden_lista where folio = current_setting('test.asg')) then raise exception 'Aseguradora sin autorizar aparece habilitada'; end if;
+  if (select habilitada from public.v_orden_lista where folio = 'OT-0005') is not true then raise exception 'Orden pagada no aparece habilitada'; end if;
+  if (select habilitada from public.v_orden_lista where folio = (select folio from public.orden where placa = 'CAR-007')) then raise exception 'Particular sin anticipo aparece habilitada'; end if;
+  raise notice 'OK solo las órdenes habilitadas aparecen como programables';
+end $$;
+
 \echo '=== Todas las pruebas SQL pasaron ==='

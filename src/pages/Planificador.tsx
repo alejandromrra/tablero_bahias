@@ -54,7 +54,7 @@ export default function Planificador() {
     const [bloques, ordenes] = await Promise.all([
       q<Bloque[]>(supabase.from('v_planificador').select('*').lt('inicio', hi).gt('fin', lo).order('inicio')),
       q<any[]>(supabase.from('v_orden_lista').select('id, folio, placa, cliente, tipo, estado, atrasada, fecha_prometida')
-        .in('estado', ['Autorizada', 'En proceso', 'Esperando refacción']).order('fecha_prometida')),
+        .eq('habilitada', true).order('fecha_prometida')),
     ]);
     const ids = ordenes.map((o) => o.id);
     const etapas = ids.length ? await q<any[]>(supabase.from('etapa').select('id, orden_id, tipo, secuencia, carga, area_tipo, especialidades, programable, horas, piezas, estado').in('orden_id', ids).order('secuencia').order('carga')) : [];

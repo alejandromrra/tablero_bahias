@@ -1091,11 +1091,17 @@ select o.id, o.folio, o.placa, o.tipo, o.aseguradora, o.estado, o.fecha_prometid
        o.lista_en, o.entregada_en, o.cancelada_en,
        c.nombre as cliente, c.telefono as cliente_telefono,
        fp.fin_programado, ea.etapa_actual, ea.etapa_tipo, cu.curado_hasta,
+       -- Habilitada para programar: 50% de anticipo (particular) o presupuesto Autorizado (aseguradora)
+       coalesce(case o.tipo
+         when 'Particular' then pr.total > 0 and coalesce((select sum(g.monto) from public.pago g where g.orden_id = o.id), 0) >= pr.anticipo
+         else pr.estado = 'Autorizado' end, false)
+       and o.estado not in ('Lista para entrega', 'Entregada', 'Cancelada') as habilitada,
        (o.estado not in ('Lista para entrega', 'Entregada', 'Cancelada') and (
           (fp.fin_programado is not null and fp.fin_programado > o.fecha_prometida)
           or now() > o.fecha_prometida)) as atrasada
   from public.orden o
   left join public.cliente c on c.id = o.cliente_id
+  left join public.presupuesto pr on pr.orden_id = o.id
   left join lateral (select max(b.fin) as fin_programado
                        from public.etapa e join public.bloque b on b.etapa_id = e.id
                       where e.orden_id = o.id) fp on true
