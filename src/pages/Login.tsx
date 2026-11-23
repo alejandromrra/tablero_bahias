@@ -50,19 +50,19 @@ export default function Login() {
         </form>
 
         <div className="tarjeta mt-4 p-4">
-          <div className="etiqueta mb-2">Cuentas de prueba · contraseña <span className="font-mono normal-case text-grafito-200">{CLAVE_PRUEBA}</span></div>
+          <div className="etiqueta mb-2">Cuentas de prueba · contraseña <span className="font-mono normal-case text-grafito-700">{CLAVE_PRUEBA}</span></div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {CUENTAS.map((c) => (
               <button key={c.email} type="button" onClick={() => { setEmail(c.email); setClave(CLAVE_PRUEBA); }}
-                className="rounded-md border border-grafito-700 bg-grafito-900 px-2 py-1.5 text-left hover:border-grafito-500">
-                <div className="font-cond text-sm font-semibold uppercase tracking-wide text-tiza">{c.rol}</div>
-                <div className="truncate text-[0.7rem] text-grafito-400">{c.email}</div>
+                className="rounded-md border border-grafito-200 bg-grafito-50 px-2 py-1.5 text-left hover:border-grafito-400">
+                <div className="font-cond text-sm font-semibold uppercase tracking-wide text-grafito-900">{c.rol}</div>
+                <div className="truncate text-[0.7rem] text-grafito-500">{c.email}</div>
               </button>
             ))}
           </div>
         </div>
-        <p className="mt-4 text-center text-sm text-grafito-400">
-          ¿Sos cliente? <Link to="/consulta" className="font-semibold text-tiza underline underline-offset-2">Consultá tu vehículo</Link>
+        <p className="mt-4 text-center text-sm text-grafito-500">
+          ¿Sos cliente? <Link to="/consulta" className="font-semibold text-grafito-900 underline underline-offset-2">Consultá tu vehículo</Link>
         </p>
       </div>
     </div>

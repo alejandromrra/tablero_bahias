@@ -1,22 +1,24 @@
 /** @type {import('tailwindcss').Config} */
+// Identidad: gris grafito #1F2933, naranja de seguridad #F26B1D (solo conflictos y atrasos),
+// fondo #F4F5F7, blanco #FFFFFF y acentos por área #3E7CB1 · #2F9E6E · #8E5BB5.
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Pizarrón grafito
         grafito: {
-          950: '#121416', 900: '#181b1e', 850: '#1e2226', 800: '#252a2f', 700: '#323940',
-          600: '#46505a', 500: '#5f6b76', 400: '#8592a0', 300: '#aab4be', 200: '#cdd4da', 100: '#e7ebee',
+          50: '#F4F5F7', 100: '#E9ECEF', 200: '#D9DEE3', 300: '#BCC4CC', 400: '#8A95A1',
+          500: '#66717D', 600: '#4B5561', 700: '#36404B', 800: '#2A333D', 900: '#1F2933', 950: '#151C24',
         },
-        tiza: '#eef1f3',
-        // Naranja de seguridad: SOLO conflictos y atrasos
-        alerta: { DEFAULT: '#ff6a13', claro: '#ff8a45', fondo: '#3a1f0f' },
+        alerta: { DEFAULT: '#F26B1D', claro: '#B4500F', fondo: '#FDEEE4' },
+        azul: '#3E7CB1',
+        verde: '#2F9E6E',
+        violeta: '#8E5BB5',
       },
       fontFamily: {
-        sans: ['"Barlow"', 'system-ui', 'sans-serif'],
-        cond: ['"Barlow Condensed"', '"Barlow"', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        sans: ['"Source Sans 3"', 'system-ui', 'sans-serif'],
+        cond: ['Oswald', '"Source Sans 3"', 'sans-serif'],
+        mono: ['"Source Sans 3"', 'system-ui', 'sans-serif'],
       },
     },
   },

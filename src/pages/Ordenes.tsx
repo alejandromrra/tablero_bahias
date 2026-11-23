@@ -5,7 +5,7 @@ import { q, useCarga } from '@/lib/useCarga';
 import { fechaHora } from '@/lib/format';
 import { Atrasada, Aviso, Boton, Cargando, Encabezado, Estado } from '@/components/ui';
 
-const ESTADOS = ['Presupuesto', 'En proceso', 'Esperando refacciones', 'Terminada', 'Entregada'];
+const ESTADOS = ['Recibida', 'Presupuestada', 'Autorizada', 'En proceso', 'Esperando refacción', 'Lista para entrega', 'Entregada', 'Cancelada'];
 
 export default function Ordenes() {
   const nav = useNavigate();
@@ -32,7 +32,7 @@ export default function Ordenes() {
           <option value="">Todos los estados</option>
           {ESTADOS.map((e) => <option key={e}>{e}</option>)}
         </select>
-        <label className="flex items-center gap-2 text-sm text-grafito-300"><input type="checkbox" checked={soloAtrasadas} onChange={(e) => setSoloAtrasadas(e.target.checked)} /> Solo atrasadas</label>
+        <label className="flex items-center gap-2 text-sm text-grafito-600"><input type="checkbox" checked={soloAtrasadas} onChange={(e) => setSoloAtrasadas(e.target.checked)} /> Solo atrasadas</label>
       </div>
       {error && <Aviso tipo="error">{error}</Aviso>}
       {cargando && !data ? <Cargando /> : (
@@ -42,17 +42,17 @@ export default function Ordenes() {
             <tbody>
               {filas.map((o) => (
                 <tr key={o.id} className="cursor-pointer" onClick={() => nav(`/ordenes/${o.id}`)}>
-                  <td><Link to={`/ordenes/${o.id}`} className="folio text-tiza hover:underline">{o.folio}</Link></td>
+                  <td><Link to={`/ordenes/${o.id}`} className="folio text-grafito-900 hover:underline">{o.folio}</Link></td>
                   <td className="font-mono">{o.placa}</td>
                   <td>{o.cliente}</td>
-                  <td className="text-grafito-300">{o.tipo}{o.aseguradora ? ` · ${o.aseguradora}` : ''}</td>
+                  <td className="text-grafito-600">{o.tipo}{o.aseguradora ? ` · ${o.aseguradora}` : ''}</td>
                   <td><Estado valor={o.estado} /></td>
-                  <td className="text-grafito-300">{o.etapa_actual ?? '—'}</td>
-                  <td className={o.atrasada ? 'font-semibold text-alerta' : ''}>{fechaHora(o.fecha_prometida)}</td>
+                  <td className="text-grafito-600">{o.etapa_actual ?? '—'}</td>
+                  <td className={o.atrasada ? 'font-semibold text-alerta-claro' : ''}>{fechaHora(o.fecha_prometida)}</td>
                   <td>{o.atrasada && <Atrasada />}</td>
                 </tr>
               ))}
-              {filas.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-grafito-400">Sin órdenes con esos filtros.</td></tr>}
+              {filas.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-grafito-500">Sin órdenes con esos filtros.</td></tr>}
             </tbody>
           </table>
         </div>

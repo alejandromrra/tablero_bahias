@@ -37,18 +37,18 @@ export default function Pagos() {
     setEnviando(true); setMsg(null);
     try {
       const r = await operar<any>('registrar_pago', { orden_id: ordenId, monto: Number(monto), concepto, metodo }, opId);
-      setMsg({ tipo: 'ok', texto: r.repetida ? 'Ese pago ya estaba registrado (operación repetida): no se cobró dos veces.' : `Pago registrado. Saldo: ${dinero(r.saldo)}${r.autorizada_para_programar ? ' · ya se puede programar' : ''}.` });
+      setMsg({ tipo: 'ok', texto: r.repetida ? 'Ese pago ya estaba registrado (operación repetida): no se cobró dos veces.' : `Pago registrado. Saldo: ${dinero(r.saldo)}${r.habilitada ? ' · la orden ya se puede programar' : ''}.` });
       setOpId(nuevoOpId());
       fin.recargar();
     } catch (e: any) { setMsg({ tipo: 'error', texto: e.message }); }
     finally { setEnviando(false); }
   };
 
-  const conceptos = f?.tipo === 'Aseguradora' ? ['Deducible', 'Aseguradora', 'Saldo'] : ['Anticipo', 'Saldo'];
+  const conceptos = f?.tipo === 'Aseguradora' ? ['Deducible', 'Aseguradora'] : ['Anticipo', 'Saldo'];
 
   return (
     <div className="max-w-4xl">
-      <Encabezado titulo="Pagos" sub="Anticipo (particular) o deducible (aseguradora). Cada pago lleva un op_id idempotente." />
+      <Encabezado titulo="Pagos" sub="Particular: anticipo del 50% y saldo. Aseguradora: el cliente paga el deducible y el resto lo cubre la aseguradora. Cada pago lleva un op_id: repetirlo no cobra dos veces." />
       <Campo etiqueta="Orden" className="mb-5 max-w-md">
         <select className="campo" value={ordenId} onChange={(e) => setParams(e.target.value ? { orden: e.target.value } : {})}>
           <option value="">Elegí una orden…</option>
@@ -71,14 +71,14 @@ export default function Pagos() {
               </Campo>
             </div>
             <div className="mt-4 flex items-center justify-between gap-3">
-              <span className="font-mono text-[0.65rem] text-grafito-500">op_id {opId.slice(0, 8)}…</span>
+              <span className="font-mono text-[0.65rem] text-grafito-400">op_id {opId.slice(0, 8)}…</span>
               <Boton variante="primario" onClick={registrar} cargando={enviando} disabled={!monto}>Registrar pago</Boton>
             </div>
             <table className="tabla mt-6">
               <thead><tr><th>Fecha</th><th>Concepto</th><th>Método</th><th className="text-right">Monto</th></tr></thead>
               <tbody>
                 {f.pagos.map((g: any) => <tr key={g.id}><td>{fechaHora(g.creado_en)}</td><td>{g.concepto}</td><td>{g.metodo}</td><td className="text-right font-mono">{dinero(g.monto)}</td></tr>)}
-                {f.pagos.length === 0 && <tr><td colSpan={4} className="text-grafito-500">Sin pagos todavía.</td></tr>}
+                {f.pagos.length === 0 && <tr><td colSpan={4} className="text-grafito-400">Sin pagos todavía.</td></tr>}
               </tbody>
             </table>
           </section>
@@ -91,8 +91,8 @@ export default function Pagos() {
               <div className="flex justify-between"><span>Saldo aseguradora</span><span className="font-mono">{dinero(f.saldo_aseguradora)}</span></div>
             </> : <div className="flex justify-between"><span>Anticipo requerido (50%)</span><span className="font-mono">{dinero(f.presupuesto.anticipo)}</span></div>}
             <div className="flex justify-between"><span>Pagado</span><span className="font-mono">{dinero(f.pagado)}</span></div>
-            <div className="flex justify-between border-t border-grafito-700 pt-2 font-semibold"><span>Saldo</span><span className="font-mono">{dinero(f.saldo)}</span></div>
-            <p className="pt-2 text-xs text-grafito-400">Programable: {f.autorizada_para_programar ? 'sí ✓' : f.tipo === 'Aseguradora' ? 'no — falta autorización' : 'no — falta anticipo'}</p>
+            <div className="flex justify-between border-t border-grafito-200 pt-2 font-semibold"><span>Saldo</span><span className="font-mono">{dinero(f.saldo)}</span></div>
+            <p className="pt-2 text-xs text-grafito-500">Programable: {f.habilitada ? 'sí ✓' : f.tipo === 'Aseguradora' ? 'no — falta autorización' : 'no — falta anticipo'}</p>
           </section>
         </div>
       )}

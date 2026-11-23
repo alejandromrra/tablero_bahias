@@ -58,7 +58,7 @@ export default function Refacciones() {
         <Campo etiqueta="Costo (MXN)"><input className="campo font-mono" type="number" min="0.01" step="0.01" value={costo} onChange={(e) => setCosto(e.target.value)} /></Campo>
         <Boton variante="primario" onClick={alta} cargando={ocupado === 'alta'} disabled={!ordenId || !nombre || !costo}>Dar de alta</Boton>
       </section>
-      <label className="mb-3 flex items-center gap-2 text-sm text-grafito-300"><input type="checkbox" checked={soloPend} onChange={(e) => setSoloPend(e.target.checked)} /> Solo sin recibir</label>
+      <label className="mb-3 flex items-center gap-2 text-sm text-grafito-600"><input type="checkbox" checked={soloPend} onChange={(e) => setSoloPend(e.target.checked)} /> Solo sin recibir</label>
       {lista.cargando && !lista.data ? <Cargando /> : (
         <div className="tarjeta overflow-x-auto">
           <table className="tabla min-w-[700px]">
@@ -66,16 +66,16 @@ export default function Refacciones() {
             <tbody>
               {filas.map((r) => (
                 <tr key={r.id}>
-                  <td><Link className="folio hover:underline" to={`/ordenes/${r.orden_id}`}>{r.folio}</Link> <span className="font-mono text-xs text-grafito-400">{r.placa}</span></td>
+                  <td><Link className="folio hover:underline" to={`/ordenes/${r.orden_id}`}>{r.folio}</Link> <span className="font-mono text-xs text-grafito-500">{r.placa}</span></td>
                   <td>{r.nombre}</td>
-                  {ger && <td className="text-right font-mono text-grafito-300">{dinero(r.costo)}</td>}
+                  {ger && <td className="text-right font-mono text-grafito-600">{dinero(r.costo)}</td>}
                   <td className="text-right font-mono">{dinero(r.precio_venta)}</td>
-                  {ger && <td className="text-right font-mono text-grafito-300">{dinero(r.margen)}</td>}
-                  <td><Estado valor={r.estado} />{r.recibida_en && <span className="ml-2 text-xs text-grafito-500">{fechaHora(r.recibida_en)}</span>}</td>
+                  {ger && <td className="text-right font-mono text-grafito-600">{dinero(r.margen)}</td>}
+                  <td><Estado valor={r.estado} refaccion />{r.recibida_en && <span className="ml-2 text-xs text-grafito-400">{fechaHora(r.recibida_en)}</span>}</td>
                   <td className="text-right">{r.estado !== 'Recibida' && <Boton onClick={() => recibir(r.id)} cargando={ocupado === r.id}>Marcar Recibida</Boton>}</td>
                 </tr>
               ))}
-              {filas.length === 0 && <tr><td colSpan={7} className="py-6 text-center text-grafito-500">Sin refacciones.</td></tr>}
+              {filas.length === 0 && <tr><td colSpan={7} className="py-6 text-center text-grafito-400">Sin refacciones.</td></tr>}
             </tbody>
           </table>
         </div>

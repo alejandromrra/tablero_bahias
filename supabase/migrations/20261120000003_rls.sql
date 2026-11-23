@@ -11,6 +11,8 @@
 
 alter table public.config              enable row level security;
 alter table public.config_finanzas     enable row level security;
+alter table public.horario_taller      enable row level security;
+alter table public.ausencia            enable row level security;
 alter table public.area                enable row level security;
 alter table public.tecnico             enable row level security;
 alter table public.perfil              enable row level security;
@@ -38,13 +40,13 @@ alter default privileges in schema public revoke all on tables from anon, authen
 alter default privileges in schema public revoke all on sequences from anon, authenticated;
 alter default privileges in schema public revoke execute on functions from public, anon, authenticated;
 
-grant select on public.config, public.config_finanzas, public.area, public.perfil, public.catalogo_etapa,
+grant select on public.config, public.config_finanzas, public.horario_taller, public.ausencia, public.area, public.perfil, public.catalogo_etapa,
                 public.cliente, public.pieza, public.etapa, public.bloque, public.registro_tiempo,
                 public.presupuesto, public.pago, public.liquidacion, public.liquidacion_detalle
   to authenticated;
 -- Columnas permitidas (sin costos ni deducible)
-grant select (id, nombre, especialidades, horario, activo) on public.tecnico to authenticated;
-grant select (id, folio, placa, cliente_id, tipo, aseguradora, estado, fecha_prometida, creado_por, creado_en)
+grant select (id, nombre, especialidades, dias_laborables, activo) on public.tecnico to authenticated;
+grant select (id, folio, placa, cliente_id, tipo, aseguradora, estado, fecha_prometida, lista_en, entregada_en, cancelada_en, creado_por, creado_en)
   on public.orden to authenticated;
 grant select (id, orden_id, nombre, precio_venta, estado, recibida_en, creado_en) on public.refaccion to authenticated;
 grant select on public.v_orden_lista, public.v_planificador to authenticated;
@@ -71,6 +73,12 @@ create policy config_select on public.config for select to authenticated
 
 create policy config_finanzas_select on public.config_finanzas for select to authenticated
   using (public.mi_rol() = 'gerencia');
+
+create policy horario_select on public.horario_taller for select to authenticated
+  using (public.mi_rol() is not null);
+
+create policy ausencia_select on public.ausencia for select to authenticated
+  using (public.mi_rol() in ('gerencia', 'asesor') or tecnico_id = public.mi_tecnico_id());
 
 create policy area_select on public.area for select to authenticated
   using (public.mi_rol() is not null);

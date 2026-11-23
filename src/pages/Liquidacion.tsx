@@ -49,8 +49,8 @@ export default function Liquidacion() {
                   <td className="font-semibold">{f.tecnico_nombre}</td>
                   <td className="text-right font-mono">{horas(f.horas_vendidas)}</td>
                   <td className="text-right font-mono">{horas(f.horas_productivas)}</td>
-                  <td className="text-right font-mono text-grafito-300">{Number(f.horas_productivas) > 0 ? `${Math.round((f.horas_vendidas / f.horas_productivas) * 100)}%` : '—'}</td>
-                  <td className="text-right font-mono text-grafito-300">{dinero(f.tarifa_hora)}</td>
+                  <td className="text-right font-mono text-grafito-600">{Number(f.horas_productivas) > 0 ? `${Math.round((f.horas_vendidas / f.horas_productivas) * 100)}%` : '—'}</td>
+                  <td className="text-right font-mono text-grafito-600">{dinero(f.tarifa_hora)}</td>
                   <td className="text-right font-mono">{dinero(f.pago_base)}</td>
                   <td className="text-right font-mono">{dinero(f.bono)}</td>
                   <td className="text-right font-mono font-semibold">{dinero(f.total)}</td>
@@ -61,9 +61,9 @@ export default function Liquidacion() {
               <tr className="font-semibold"><td className="px-3 py-2">Total</td><td className="px-3 text-right font-mono">{horas(tot.v)}</td><td className="px-3 text-right font-mono">{horas(tot.p)}</td><td /><td /><td /><td className="px-3 text-right font-mono">{dinero(tot.b)}</td><td className="px-3 text-right font-mono">{dinero(tot.t)}</td></tr>
             </tfoot>
           </table>
-          <p className="px-3 py-3 text-xs text-grafito-400">
-            Horas vendidas: horas de catálogo de etapas terminadas en la semana. Productivas: tiempo real en «En curso».
-            Bono: {dinero(data.bono_hora)} por hora vendida sobre {Number(data.umbral_bono_horas)} h. Pago base = horas vendidas × tarifa.
+          <p className="px-3 py-3 text-xs text-grafito-500">
+            Horas vendidas: horas de catálogo de las etapas que el técnico terminó en la semana. Productivas: tiempo real marcado «En curso».
+            Pago base = horas productivas × tarifa. Bono: {dinero(data.bono_hora)} por cada hora productiva por encima de {Number(data.umbral_bono_horas)} h.
           </p>
         </div>
       )}

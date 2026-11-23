@@ -27,7 +27,8 @@ export default function NuevaOrden() {
 
   const cat = useCarga(() => q<any[]>(supabase.from('catalogo_etapa').select('*').order('secuencia')), []);
   const estimado = useMemo(() => (cat.data ?? []).map((c) => ({
-    nombre: c.nombre, horas: piezas.reduce((s, p) => s + Number(c[clave[p.dano]] ?? 0), 0),
+    nombre: c.nombre, vendible: c.vendible,
+    horas: c.horas_fijas ? Number(c.horas_fijas) : piezas.reduce((s, p) => s + Number(c[clave[p.dano]] ?? 0), 0),
   })).filter((x) => x.horas > 0), [cat.data, piezas]);
 
   const setPieza = (i: number, p: Partial<Pieza>) => setPiezas(piezas.map((x, j) => (j === i ? { ...x, ...p } : x)));
@@ -60,7 +61,7 @@ export default function NuevaOrden() {
               <div className="flex gap-2">
                 {(['Particular', 'Aseguradora'] as const).map((t) => (
                   <button key={t} type="button" onClick={() => setTipo(t)}
-                    className={`flex-1 rounded-md border px-3 py-2 font-cond text-sm font-semibold uppercase tracking-wide ${tipo === t ? 'border-tiza bg-grafito-700 text-tiza' : 'border-grafito-600 text-grafito-400'}`}>{t}</button>
+                    className={`flex-1 rounded-md border px-3 py-2 font-cond text-sm font-semibold uppercase tracking-wide ${tipo === t ? 'border-grafito-900 bg-grafito-200 text-grafito-900' : 'border-grafito-300 text-grafito-500'}`}>{t}</button>
                 ))}
               </div>
             </Campo>
@@ -81,10 +82,10 @@ export default function NuevaOrden() {
               {piezas.map((p, i) => (
                 <div key={i} className="flex flex-wrap gap-2">
                   <input className="campo min-w-[12rem] flex-1" placeholder="Ej.: Defensa delantera" value={p.nombre} onChange={(e) => setPieza(i, { nombre: e.target.value })} aria-label={`Pieza ${i + 1}`} />
-                  <div className="flex overflow-hidden rounded-md border border-grafito-600" role="radiogroup" aria-label="Daño">
+                  <div className="flex overflow-hidden rounded-md border border-grafito-300" role="radiogroup" aria-label="Daño">
                     {DANOS.map((d) => (
                       <button key={d} type="button" role="radio" aria-checked={p.dano === d} onClick={() => setPieza(i, { dano: d })}
-                        className={`px-2.5 py-2 font-cond text-xs font-semibold uppercase ${p.dano === d ? 'bg-tiza text-grafito-950' : 'text-grafito-400 hover:bg-grafito-800'}`}>{d}</button>
+                        className={`px-2.5 py-2 font-cond text-xs font-semibold uppercase ${p.dano === d ? 'bg-grafito-900 text-white' : 'text-grafito-500 hover:bg-grafito-100'}`}>{d}</button>
                     ))}
                   </div>
                   <Boton variante="fantasma" onClick={() => setPiezas(piezas.filter((_, j) => j !== i))} disabled={piezas.length === 1} aria-label="Quitar pieza">✕</Boton>
@@ -97,12 +98,12 @@ export default function NuevaOrden() {
         <aside className="tarjeta h-fit p-5">
           <h2 className="etiqueta text-sm">Etapas estimadas</h2>
           <ol className="mt-2 space-y-1 text-sm">
-            {estimado.map((e, i) => <li key={e.nombre} className="flex justify-between"><span>{i + 1}. {e.nombre}</span><span className="font-mono text-grafito-300">{horas(e.horas)}</span></li>)}
+            {estimado.map((e, i) => <li key={e.nombre} className={`flex justify-between ${e.vendible ? '' : 'text-grafito-400'}`}><span>{i + 1}. {e.nombre}{e.nombre === 'Pintura' ? ' (+1 h horneado)' : ''}</span><span className="font-mono text-grafito-600">{horas(e.horas)}</span></li>)}
           </ol>
-          <div className="mt-3 flex justify-between border-t border-grafito-700 pt-2 text-sm font-semibold">
-            <span>Total</span><span className="font-mono">{horas(estimado.reduce((s, e) => s + e.horas, 0))}</span>
+          <div className="mt-3 flex justify-between border-t border-grafito-200 pt-2 text-sm font-semibold">
+            <span>Horas vendidas</span><span className="font-mono">{horas(estimado.filter((e) => e.vendible).reduce((s, e) => s + e.horas, 0))}</span>
           </div>
-          <p className="mt-3 text-xs text-grafito-400">La pintura se parte en cargas de cabina de hasta 6 piezas. Se programa con 50% de anticipo (particular) o presupuesto autorizado (aseguradora).</p>
+          <p className="mt-3 text-xs text-grafito-500">La orden entra como Recibida; el presupuesto se emite y autoriza desde la orden. La pintura va en cargas de hasta 6 piezas. Se programa con 50% de anticipo (particular) o presupuesto Autorizado (aseguradora).</p>
           <Boton variante="primario" className="mt-4 w-full" onClick={guardar} cargando={enviando}>Crear orden</Boton>
         </aside>
       </div>

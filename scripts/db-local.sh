@@ -12,7 +12,7 @@ reset_db() {
   $PSQL -d "$DB" -f supabase/seed.sql
 }
 reset_db
-$PSQL -d "$DB" -f supabase/tests/01_pruebas.sql -o /dev/null 2>&1 | sed 's/^psql:[^ ]* //'
+$PSQL -d "$DB" -f supabase/tests/01_pruebas.sql -o /dev/null 2>&1 | sed "s/^psql:[^ ]* //"
 reset_db
 ./supabase/tests/02_carrera.sh
 echo "OK: pruebas SQL superadas"
