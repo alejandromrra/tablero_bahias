@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body { @apply bg-grafito-50 text-grafito-800 font-sans antialiased; }
+  ::selection { @apply bg-grafito-400 text-white; }
+  input, select, textarea { color-scheme: light; }
+  .font-mono { font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+}
+
+@layer components {
+  .campo { @apply w-full rounded-md border border-grafito-300 bg-white px-3 py-2 text-sm text-grafito-900 placeholder:text-grafito-400 focus:border-grafito-600 focus:outline-none focus:ring-1 focus:ring-grafito-600 disabled:opacity-50; }
+  .etiqueta { @apply mb-1 block font-cond text-xs font-semibold uppercase tracking-wider text-grafito-500; }
+  .tarjeta { @apply rounded-lg border border-grafito-200 bg-white; }
+  .titulo { @apply font-cond text-2xl font-bold uppercase tracking-wide text-grafito-900; }
+  .tabla { @apply w-full text-sm; }
+  .tabla th { @apply border-b border-grafito-200 px-3 py-2 text-left font-cond text-xs font-semibold uppercase tracking-wider text-grafito-500; }
+  .tabla td { @apply border-b border-grafito-100 px-3 py-2 align-middle; }
+  .tabla tbody tr:hover { @apply bg-grafito-100/60; }
+  .folio { @apply font-mono text-[0.8rem] font-bold tracking-tight; }
+}
+
+/* Rayado para horneado, margen y mantenimiento */
+.rayas { background-image: repeating-linear-gradient(135deg, rgba(255,255,255,.35) 0 4px, transparent 4px 8px); }
+.rayas-suaves { background-image: repeating-linear-gradient(135deg, rgba(31,41,51,.10) 0 3px, transparent 3px 7px); }
+.cerrado { background-image: repeating-linear-gradient(135deg, rgba(31,41,51,.07) 0 4px, transparent 4px 9px); background-color: #E9ECEF; }
+@media print {
+  body { background: #fff; color: #000; }
+  .no-print { display: none !important; }
+  .tarjeta { border-color: #ccc; background: #fff; }
+}
