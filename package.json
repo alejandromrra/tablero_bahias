@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:db": "./scripts/db-local.sh",
     "carrera": "node scripts/carrera-cabina.mjs",
-    "rls": "node scripts/verificar-rls.mjs"
+    "rls": "node scripts/verificar-rls.mjs",
+    "verificar": "node scripts/verificar-proyecto.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",

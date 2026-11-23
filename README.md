@@ -196,6 +196,12 @@ npm run carrera
 - no puede insertar bloques;
 - la consulta pública con un folio ajeno devuelve `null`.
 
+### Verificación de un proyecto ya sembrado (sin escribir datos)
+
+`npm run verificar` se conecta al proyecto de `.env.local` y comprueba la configuración, el catálogo, las áreas, los técnicos, el horario, el caso resuelto, las órdenes programables y el atraso.
+
+También intenta asignaciones que la base tiene que rechazar: sin anticipo, técnico ocupado, etapa anterior, especialidad, cabina ocupada, armado con refacciones pendientes, fuera de horario y ausencia. Muestra el mensaje exacto de cada rechazo y confirma que la cantidad de bloques no cambió. Un rechazo revierte toda la operación, así que el script no deja datos.
+
 ### Pruebas de la base de datos
 
 `npm run test:db` (`scripts/db-local.sh`) arma una base en un Postgres 15 o superior local, con un stub mínimo de Supabase, aplica migraciones y semilla, y corre dos archivos.
